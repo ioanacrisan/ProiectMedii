@@ -21,5 +21,9 @@ namespace ProiectMedii.Data
         public DbSet<ProiectMedii.Models.ServiceCategory> ServiceCategory { get; set; }
 
         public DbSet<ProiectMedii.Models.Category> Category { get; set; }
+
+        public DbSet<ProiectMedii.Models.Client> Client { get; set; }
+
+        public DbSet<ProiectMedii.Models.Appointment> Appointment { get; set; }
     }
 }

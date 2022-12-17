@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProiectMedii.Data;
 
@@ -11,9 +12,10 @@ using ProiectMedii.Data;
 namespace ProiectMedii.Migrations
 {
     [DbContext(typeof(ProiectMediiContext))]
-    partial class ProiectMediiContextModelSnapshot : ModelSnapshot
+    [Migration("20221217181540_Appointments")]
+    partial class Appointments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,32 +23,6 @@ namespace ProiectMedii.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
-
-            modelBuilder.Entity("ProiectMedii.Models.Appointment", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
-
-                    b.Property<DateTime>("AppointmentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ClientID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ServiceID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ClientID");
-
-                    b.HasIndex("ServiceID");
-
-                    b.ToTable("Appointment");
-                });
 
             modelBuilder.Entity("ProiectMedii.Models.Category", b =>
                 {
@@ -63,35 +39,6 @@ namespace ProiectMedii.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Category");
-                });
-
-            modelBuilder.Entity("ProiectMedii.Models.Client", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
-
-                    b.Property<string>("Adress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Client");
                 });
 
             modelBuilder.Entity("ProiectMedii.Models.Hairstylist", b =>
@@ -163,21 +110,6 @@ namespace ProiectMedii.Migrations
                     b.ToTable("ServiceCategory");
                 });
 
-            modelBuilder.Entity("ProiectMedii.Models.Appointment", b =>
-                {
-                    b.HasOne("ProiectMedii.Models.Client", "Client")
-                        .WithMany("Appointments")
-                        .HasForeignKey("ClientID");
-
-                    b.HasOne("ProiectMedii.Models.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceID");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Service");
-                });
-
             modelBuilder.Entity("ProiectMedii.Models.Service", b =>
                 {
                     b.HasOne("ProiectMedii.Models.Hairstylist", "Hairstylist")
@@ -209,11 +141,6 @@ namespace ProiectMedii.Migrations
             modelBuilder.Entity("ProiectMedii.Models.Category", b =>
                 {
                     b.Navigation("ServiceCategories");
-                });
-
-            modelBuilder.Entity("ProiectMedii.Models.Client", b =>
-                {
-                    b.Navigation("Appointments");
                 });
 
             modelBuilder.Entity("ProiectMedii.Models.Hairstylist", b =>
