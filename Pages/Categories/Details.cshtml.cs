@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ProiectMedii.Data;
 using ProiectMedii.Models;
 
-namespace ProiectMedii.Pages.Services
+namespace ProiectMedii.Pages.Categories
 {
     public class DetailsModel : PageModel
     {
@@ -19,23 +19,23 @@ namespace ProiectMedii.Pages.Services
             _context = context;
         }
 
-      public Service Service { get; set; }
+      public Category Category { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Service == null)
+            if (id == null || _context.Category == null)
             {
                 return NotFound();
             }
 
-            var service = await _context.Service.Include(a => a.ServiceCategories).Include(b => b.Hairstylist).FirstOrDefaultAsync(m => m.ID == id);
-            if (service == null)
+            var category = await _context.Category.FirstOrDefaultAsync(m => m.ID == id);
+            if (category == null)
             {
                 return NotFound();
             }
             else 
             {
-                Service = service;
+                Category = category;
             }
             return Page();
         }

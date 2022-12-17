@@ -17,5 +17,9 @@ namespace ProiectMedii.Data
         public DbSet<ProiectMedii.Models.Service> Service { get; set; } = default!;
 
         public DbSet<ProiectMedii.Models.Hairstylist> Hairstylist { get; set; }
+
+        public DbSet<ProiectMedii.Models.ServiceCategory> ServiceCategory { get; set; }
+
+        public DbSet<ProiectMedii.Models.Category> Category { get; set; }
     }
 }

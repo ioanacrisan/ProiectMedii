@@ -12,7 +12,7 @@ using ProiectMedii.Models;
 
 namespace ProiectMedii.Pages.Services
 {
-    public class EditModel : PageModel
+    public class EditModel : ServiceCategoriesPageModel
     {
         private readonly ProiectMedii.Data.ProiectMediiContext _context;
 
@@ -31,12 +31,22 @@ namespace ProiectMedii.Pages.Services
                 return NotFound();
             }
 
-            var service =  await _context.Service.FirstOrDefaultAsync(m => m.ID == id);
-            if (service == null)
+
+            Service = await _context.Service
+ .Include(b => b.Hairstylist)
+ .Include(b => b.ServiceCategories).ThenInclude(b => b.Category)
+ .AsNoTracking()
+ .FirstOrDefaultAsync(m => m.ID == id);
+
+
+
+            if (Service == null)
             {
                 return NotFound();
             }
-            Service = service;
+
+            PopulateAssignedCategoryData(_context, Service);
+         
 
             ViewData["HairstylistID"] = new SelectList(_context.Set<Hairstylist>(), "ID", "HairstylistName");
 
@@ -46,37 +56,38 @@ namespace ProiectMedii.Pages.Services
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
-
-            _context.Attach(Service).State = EntityState.Modified;
-
-            try
+            //se va include Author conform cu sarcina de la lab 2
+            var serviceToUpdate = await _context.Service
+            .Include(i => i.Hairstylist)
+            .Include(i => i.ServiceCategories)
+            .ThenInclude(i => i.Category)
+            .FirstOrDefaultAsync(s => s.ID == id);
+            if (serviceToUpdate == null)
             {
+                return NotFound();
+            }
+            //se va modifica AuthorID conform cu sarcina de la lab 2
+            if (await TryUpdateModelAsync<Service>(
+            serviceToUpdate,
+            "Service",
+            i => i.Price, i => i.Duration, i => i.HairstylistID))
+            {
+                UpdateServiceCategories(_context, selectedCategories, serviceToUpdate);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ServiceExists(Service.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool ServiceExists(int id)
-        {
-          return _context.Service.Any(e => e.ID == id);
+            //Apelam UpdateBookCategories pentru a aplica informatiile din checkboxuri la entitatea Books care
+            //este editata
+            UpdateServiceCategories(_context, selectedCategories, serviceToUpdate);
+            PopulateAssignedCategoryData(_context, serviceToUpdate);
+            return Page();
         }
     }
+
 }

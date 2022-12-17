@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/"
 @model ProiectMedii.Pages.Services.IndexModel
 
 @{
@@ -19,6 +19,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Service[0].Hairstylist.HairstylistName)
             </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Service[0].ServiceCategories)
+            </th>
+
+
             <th>
                 @Html.DisplayNameFor(model => model.Service[0].Duration)
             </th>
@@ -29,14 +35,30 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Service) {
-        <tr>
+        @foreach (var item in Model.ServiceD.Services)
+        {
+            string selectedRow = "";
+            if (item.ID == Model.ServiceID)
+            {
+                selectedRow = "table-success";
+            }
+            <tr class="@selectedRow">
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Hairstylist.HairstylistName)
             </td>
+
+                <td>
+                    @{
+                        foreach (var category in item.ServiceCategories)
+                        {
+                            @category.Category.ID @: @category.Category.CategoryName <br />
+                        }
+                    }
+                </td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Duration)
                 </td>

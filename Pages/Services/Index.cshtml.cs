@@ -19,13 +19,27 @@ namespace ProiectMedii.Pages.Services
             _context = context;
         }
 
-        public IList<Service> Service { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public IList<Service> Service { get; set; }
+        public ServiceData ServiceD { get; set; }
+        public int ServiceID { get; set; }
+        public int CategoryID { get; set; }
+        public async Task OnGetAsync(int? id, int? categoryID)
         {
-            if (_context.Service != null)
+            ServiceD = new ServiceData();
+            ServiceD.Services = await _context.Service
+            .Include(b => b.Hairstylist)
+            .Include(b => b.ServiceCategories)
+            .ThenInclude(b => b.Category)
+            .AsNoTracking()
+            .OrderBy(b => b.Title)
+            .ToListAsync();
+            if (id != null)
             {
-                Service = await _context.Service.Include(b => b.Hairstylist).ToListAsync();
+                ServiceID = id.Value;
+                Service service = ServiceD.Services
+                .Where(i => i.ID == id.Value).Single();
+                ServiceD.Categories = service.ServiceCategories.Select(s => s.Category);
             }
         }
     }

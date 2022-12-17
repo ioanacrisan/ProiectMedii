@@ -13,6 +13,8 @@ namespace ProiectMedii.Models
         [Display(Name = "Denumire Serviciu")]
         public string Title { get; set; }
 
+        public ICollection<ServiceCategory>? ServiceCategories { get; set; }
+
         public int? HairstylistID { get; set; }
         public Hairstylist? Hairstylist { get; set; }
 
