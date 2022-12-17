@@ -4,8 +4,19 @@ using ProiectMedii.Data;
 using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+    policy.RequireRole("Admin"));
+});
+
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/Appointments");
+    options.Conventions.AuthorizeFolder("/Clients", "AdminPolicy");
+
+});
 builder.Services.AddDbContext<ProiectMediiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ProiectMediiContext") ?? throw new InvalidOperationException("Connection string 'ProiectMediiContext' not found.")));
 
@@ -13,6 +24,7 @@ builder.Services.AddDbContext<LibraryIdentityContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ProiectMediiContext") ?? throw new InvalidOperationException("Connection string 'ProiectMediiContext' not found.")));
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<LibraryIdentityContext>();
 
 var app = builder.Build();

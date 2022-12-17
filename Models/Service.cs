@@ -11,6 +11,7 @@ namespace ProiectMedii.Models
         public int ID { get; set; }
 
         [Display(Name = "Denumire Serviciu")]
+        [StringLength(150, MinimumLength = 3)]
         public string Title { get; set; }
 
         public ICollection<ServiceCategory>? ServiceCategories { get; set; }
@@ -23,6 +24,7 @@ namespace ProiectMedii.Models
         public string Duration { get; set; }
 
         [Column(TypeName = "decimal(6, 2)")]
+        [Range(0.01, 500)]
         public decimal Price { get; set; }
     }
 }
