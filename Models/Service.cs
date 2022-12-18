@@ -16,12 +16,16 @@ namespace ProiectMedii.Models
 
         public ICollection<ServiceCategory>? ServiceCategories { get; set; }
 
+        [Display(Name = "Hairstylist")]
         public int? HairstylistID { get; set; }
+
         public Hairstylist? Hairstylist { get; set; }
 
 
         [Display(Name = "Durata serviciului")]
         public string Duration { get; set; }
+
+        [Display(Name = "Pret")]
 
         [Column(TypeName = "decimal(6, 2)")]
         [Range(0.01, 500)]
