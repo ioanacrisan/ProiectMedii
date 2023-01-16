@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using ProiectMedii.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,7 +20,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using ProiectMedii.Models;
+
+
 
 namespace ProiectMedii.Areas.Identity.Pages.Account
 {
@@ -59,6 +61,8 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -91,9 +95,9 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "{0} trebuie sa fie {2} si maxim {1} caractere.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Parola")]
+            [Display(Name = "Password")]
             public string Password { get; set; }
 
             /// <summary>
@@ -102,7 +106,7 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "Parolele nu corespund.")]
+            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -130,16 +134,13 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
             await _context.SaveChangesAsync();
             if (result.Succeeded)
             {
-                _logger.LogInformation("S-a creat un nou cont cu parola.");
-
+                _logger.LogInformation("User created a new account with password.");
                 var role = await _userManager.AddToRoleAsync(user, "User");
                 var userId = await _userManager.GetUserIdAsync(user);
-                var code = await
-                _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code =
                 WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
+                var callbackUrl = Url.Page("/Account/ConfirmEmail",
                 pageHandler: null,
                 values: new
                 {
@@ -149,10 +150,9 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
                     returnUrl = returnUrl
                 },
                 protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(Input.Email, "Confirmati-va mailul",
-                $"Va rugam sa va confirmati contul facand <a href = '{HtmlEncoder.Default.Encode(callbackUrl)}' > click aici </ a >.");
-            if
-            (_userManager.Options.SignIn.RequireConfirmedAccount)
+                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email", $"Please confirm your account by <a href = '{HtmlEncoder.Default.Encode(callbackUrl)}' > clicking here </ a >.");
+                if
+                (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
                     return RedirectToPage("RegisterConfirmation", new
                     {
@@ -166,12 +166,13 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
                     isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty,
-                    error.Description);
-                }
             }
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty,
+                error.Description);
+            }
+
             return Page();
         }
 
@@ -183,8 +184,8 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Nu se poate inregistra '{nameof(IdentityUser)}'. " +
-                    $"Asigurati-va ca '{nameof(IdentityUser)}'nu este o clasa abstracta si are un constructor fara parametrii, sau alternativ " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
+                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
@@ -193,7 +194,7 @@ namespace ProiectMedii.Areas.Identity.Pages.Account
         {
             if (!_userManager.SupportsUserEmail)
             {
-                throw new NotSupportedException(" UIimplicit necesita un user cu suport pe email.");
+                throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
         }
